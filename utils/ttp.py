@@ -398,6 +398,30 @@ async def generate_image_openai(
                                             image_url = candidate
                                             break
 
+                        # 兼容 message.images[*].image_url.url 形式（如 gemini-3-pro-image）
+                        if not image_url and not base64_string and isinstance(message, dict):
+                            images_field = message.get("images")
+                            if isinstance(images_field, list):
+                                for item in images_field:
+                                    if not isinstance(item, dict):
+                                        continue
+                                    url_obj = item.get("image_url") or item.get("url")
+                                    if isinstance(url_obj, dict):
+                                        candidate = url_obj.get("url")
+                                    else:
+                                        candidate = url_obj
+                                    if isinstance(candidate, str) and candidate:
+                                        if candidate.startswith("data:image/"):
+                                            try:
+                                                header, base64_part = candidate.split(",", 1)
+                                                image_format = header.split("/")[1].split(";")[0]
+                                                base64_string = base64_part
+                                            except Exception as e:
+                                                logger.warning(f"解析 images 字段中的 data URL 失败: {e}")
+                                        else:
+                                            image_url = candidate
+                                        break
+
                         # 如果响应中没有找到图片信息，尝试兼容 data[] 风格（部分网关可能复用 images/generations 返回结构）
                         if not image_url and not base64_string and "data" in data and data["data"]:
                             item0 = data["data"][0]
