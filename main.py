@@ -9,14 +9,14 @@ from .utils.ttp import generate_image_openai
 from .utils.file_send_server import send_file
 
 
-@register("astrbot_plugin_openai_image-command", "薄暝", "使用 OpenAI 的图片接口生成图片", "2.2.0")
+@register("astrbot_plugin_openai_image-command", "秋冥", "使用 OpenAI 的图片接口生成图片", "2.2.0")
 class MyPlugin(Star):
     def __init__(self, context: Context, config: dict):
         super().__init__(context)
 
         # OpenAI 配置
         self.openai_api_keys = self._normalize_api_keys(config.get("openai_api_key"))
-        self.openai_api_base = config.get("openai_api_base", "https://api.openai.com").strip()
+        self.openai_api_base = config.get("openai_api_base", "https://api.openai.com/v1").strip()
 
         # 接口格式：openai（messages）或 gemini（contents）
         self.api_format = str(config.get("api_format", "openai")).strip().lower() or "openai"
@@ -131,7 +131,7 @@ class MyPlugin(Star):
             logger.error("未配置 openai_api_key，无法生成图像")
             return None, None
 
-        api_base = self.openai_api_base or "https://api.openai.com"
+        api_base = self.openai_api_base or "https://api.openai.com/v1"
         logger.info(
             f"使用 {self.api_format} 格式的兼容接口生成图像，model={self.model_name}, api_base={api_base}"
         )
