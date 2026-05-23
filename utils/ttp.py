@@ -235,7 +235,7 @@ async def generate_image_openai(
     base_url = (api_base or "https://api.openai.com").rstrip("/")
     # OpenAI 兼容：/v1/chat/completions；Gemini 兼容：拼接通用 v1beta 路径
     if mode == "openai":
-        url = f"{base_url}/v1/chat/completions"
+        url = f"{base_url}/chat/completions"
     else:
         # 如果 base_url 已经是完整 v1beta 地址则直接使用，否则按通用 Gemini 路径拼接
         if "v1beta" in base_url:
